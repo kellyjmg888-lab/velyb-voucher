@@ -775,9 +775,9 @@ function MODEBR(){
   return BRMAP[id] || BRMAP[BRORDER[0]];
 }
 function MODESB(){ return SBOF(MODEBR().id); }
-function branchTotal(){
+function branchTotal(ids){
   var t = { paid: 0, bonus: 0, charged: 0, used: 0, balance: 0, count: 0, charges: 0 };
-  branchIds().forEach(function(id){
+  (ids || branchIds()).forEach(function(id){
     var x = totals(SBOF(id));
     t.paid += x.paid; t.bonus += x.bonus; t.charged += x.charged;
     t.used += x.used; t.balance += x.balance; t.count += x.count;
@@ -870,7 +870,8 @@ function branchField(id, isEdit){
 
 /* ---------------- render: shell ---------------- */
 function renderBranchTabs(){
-  var h = '', t = branchTotal(), allOn = isAll();
+  /* '전체' 탭의 금액은 지금 보고 있는 지점과 상관없이 늘 두 지점 합계입니다. */
+  var h = '', t = branchTotal(BRORDER), allOn = isAll();
   h += '<button class="btab' + (allOn ? ' on' : '') + '" data-act="branch" data-b="all" role="tab" aria-selected="' + allOn + '">' +
     '<span class="btab-name">전체</span>' +
     '<span class="btab-sub">' + money(t.balance) + '</span></button>';
