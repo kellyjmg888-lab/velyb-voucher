@@ -698,8 +698,8 @@ function merged(sb){
   });
   rows.sort(function(a, b){
     if (a.date !== b.date) return a.date < b.date ? 1 : -1;
-    /* 같은 날은 그날 실제 순서(오전 → 오후)대로: 금액권 충전이 시술 차감보다 위에 옵니다. */
-    return (a.createdAt || 0) - (b.createdAt || 0);
+    /* 같은 날도 최신순(내림차순): 그날 늦게 일어난 기록이 위, 먼저 일어난 충전이 아래. */
+    return (b.createdAt || 0) - (a.createdAt || 0);
   });
   return rows;
 }
