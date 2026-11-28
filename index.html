@@ -118,6 +118,48 @@ a{color:var(--rose-d);text-decoration:none}
 .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#D2627E,#E7A3B4);transition:width .3s}
 .bar.gold i{background:linear-gradient(90deg,#A97C34,#D6B47C)}
 
+/* 금액권(충전권) 카드 */
+.vset{margin-top:12px}
+.vset-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 3px 6px}
+.vset-head h3{margin:0;font-size:15px;font-weight:750;letter-spacing:-.01em}
+.vset-head .cap{font-size:11.5px;color:var(--muted);font-weight:700}
+.vscroll{display:flex;gap:9px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 3px 4px;margin:0 -3px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.vscroll::-webkit-scrollbar{display:none}
+.vcard{flex:0 0 auto;width:min(272px,84vw);scroll-snap-align:start;border:1px solid var(--line);border-radius:18px;
+  background:#fff;padding:13px 14px 12px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.vcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#D2627E,#E7A3B4)}
+.vcard.warn::before{background:linear-gradient(180deg,#C58A2C,#E7C88A)}
+.vcard.exp::before{background:linear-gradient(180deg,#C9563F,#E8A08A)}
+.vcard.empty-v{display:flex;flex-direction:column;justify-content:center;min-height:118px}
+.vcard-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.vname{font-size:13.5px;font-weight:800;letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vtag{font-size:10.5px;font-weight:800;border-radius:99px;padding:2px 8px;white-space:nowrap;flex:none;
+  background:var(--green-soft);color:var(--green)}
+.vtag.none{background:#F2EFED;color:#7C7176}
+.vtag.warn{background:#FDF2E2;color:#9A6A17}
+.vtag.exp{background:#FBE9E7;color:#B04A3A}
+.vmeta{font-size:11px;color:var(--muted);font-weight:600;margin-top:3px;line-height:1.45}
+.vbal{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:9px}
+.vbal b{font-size:19px;font-weight:800;letter-spacing:-.03em}
+.vbal span{font-size:10.5px;color:var(--muted);font-weight:700}
+.vbal b.neg{color:#B04765}
+.vrow{display:flex;gap:10px;margin-top:5px;font-size:10.5px;color:var(--muted);font-weight:600}
+.vrow b{color:var(--ink2);font-weight:700}
+.vbar{height:5px;border-radius:99px;background:#F3EBE8;margin-top:8px;overflow:hidden}
+.vbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#D2627E,#E7A3B4)}
+.vcard.exp .vbar i{background:linear-gradient(90deg,#C9563F,#E8A08A)}
+.vacts{display:flex;gap:5px;margin-top:10px}
+.vacts .btn{height:30px;font-size:11.5px;border-radius:8px;flex:1;padding:0 6px;white-space:nowrap}
+.vadd{flex:0 0 auto;width:118px;scroll-snap-align:start;border:1px dashed #DCCFC9;border-radius:18px;background:#FCFAF9;
+  color:var(--ink2);font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;font-family:inherit}
+.vadd span{font-size:19px;color:var(--rose);line-height:1}
+.vhint{margin:7px 3px 0;font-size:11px;color:var(--muted);line-height:1.5;font-weight:600}
+.b-charge{background:#EDF1F9;color:#42598C}
+.hint b{color:var(--ink2);font-weight:700}
+.hint.warn{color:#B3502F}
+
 /* price list */
 .pricehead{margin-top:0}
 .searchbar{position:relative;display:flex;align-items:center;margin-top:11px}
@@ -175,8 +217,9 @@ a{color:var(--rose-d);text-decoration:none}
 /* forms */
 .field{display:block;margin-top:13px}
 .field > span{display:block;font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:5px}
-input[type=date],input[type=text],input[type=number]{width:100%;height:46px;border:1px solid #E7DDD8;border-radius:12px;
+input[type=date],input[type=text],input[type=number],select{width:100%;height:46px;border:1px solid #E7DDD8;border-radius:12px;
   background:#FDFCFB;padding:0 12px;font-size:16px;color:var(--ink);-webkit-appearance:none;appearance:none}
+select{background:#FDFCFB url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2391848A' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 13px center;padding-right:34px}
 input[type=number]{-moz-appearance:textfield}
 input:focus{outline:none;border-color:#DE9AAE;box-shadow:0 0 0 3px rgba(210,98,126,.13);background:#fff}
 .searchwrap{position:relative}
@@ -409,6 +452,8 @@ function normCharge(c){
     date: isDate(c.date) ? c.date : todayISO(),
     amount: Math.max(0, Math.round(num(c.amount))),
     bonus: Math.max(0, Math.round(num(c.bonus))),
+    label: String(c.label || '').slice(0, 30),
+    expiryDate: isDate(c.expiryDate) ? c.expiryDate : null,
     memo: String(c.memo || '').slice(0, 80),
     createdAt: num(c.createdAt) || Date.now()
   };
@@ -429,6 +474,7 @@ function normUse(u){
     supply: c.supply,
     vat: (u.vat != null ? Math.round(num(u.vat)) : c.vat),
     total: (u.total != null ? Math.round(num(u.total)) : c.total),
+    chargeId: String(u.chargeId || '').slice(0, 40),
     memo: String(u.memo || '').slice(0, 80),
     forced: !!u.forced,
     createdAt: num(u.createdAt) || Date.now()
@@ -447,6 +493,13 @@ function normalizeState(p){
     var dst = s.branches[id];
     if (Array.isArray(src.charges)) dst.charges = src.charges.filter(function(x){ return x && x.id; }).map(normCharge);
     if (Array.isArray(src.uses)) dst.uses = src.uses.filter(function(x){ return x && x.id; }).map(normUse);
+    /* 구버전 백업처럼 chargeId가 없으면 그 지점의 첫 번째 금액권으로 연결합니다. */
+    var have = Object.create(null), def = firstChargeId(dst);
+    dst.charges.forEach(function(c){ have[c.id] = 1; });
+    dst.uses.forEach(function(u){
+      if (!u.chargeId) { if (def) u.chargeId = def; }
+      else if (!have[u.chargeId]) u.chargeId = '';
+    });
     if (src.manual && typeof src.manual === 'object') {
       Object.keys(src.manual).forEach(function(k){
         if (src.manual[k]) dst.manual[famKey(k)] = { at: String((src.manual[k] && src.manual[k].at) || '') };
@@ -458,10 +511,15 @@ function normalizeState(p){
 function seedState(){
   var s = blankState();
   var sb = s.branches[SEED.branch];
+  var idmap = Object.create(null);
   SEED.charges.forEach(function(c, i){
+    var nid = 'seed-c' + (i + 1);
+    if (c.id) idmap[String(c.id)] = nid;
     sb.charges.push({
-      id: 'seed-c' + (i + 1), date: c.date,
+      id: nid, date: c.date,
       amount: Math.round(num(c.amount)), bonus: Math.round(num(c.bonus)),
+      label: String(c.label || '').slice(0, 30),
+      expiryDate: isDate(c.expiryDate) ? c.expiryDate : null,
       memo: c.memo, createdAt: Date.parse(c.date + 'T10:0' + i + ':00') || Date.now()
     });
   });
@@ -472,6 +530,7 @@ function seedState(){
       id: 'seed-u' + (i + 1), date: u.date, name: u.name, cls: seedCls,
       key: (seedCls === 'normal' ? String(u.key || u.name) : famKey(String(u.key || u.name))),
       supply: c.supply, vat: c.vat, total: c.total,
+      chargeId: (u.chargeId && idmap[String(u.chargeId)]) ? idmap[String(u.chargeId)] : (sb.charges.length ? sb.charges[0].id : ''),
       memo: u.memo, forced: !!u.forced,
       createdAt: (Date.parse(u.date + 'T11:' + pad2(i * 7) + ':00') || Date.now())
     });
@@ -514,6 +573,93 @@ function totals(sb){
   sb.uses.forEach(function(u){ used += u.total; count++; });
   return { paid: paid, bonus: bonus, charged: paid + bonus, used: used, balance: paid + bonus - used, count: count };
 }
+/* ---------------- 금액권(충전권) ---------------- */
+/* 충전 기록을 날짜순으로 정렬합니다. (표시 순서 = 금액권 1, 2, ...) */
+function sortedCharges(sb){
+  return sb.charges.slice().sort(function(a, b){
+    if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+    return (a.createdAt || 0) - (b.createdAt || 0);
+  });
+}
+function firstChargeId(sb){ var arr = sortedCharges(sb); return arr.length ? arr[0].id : ''; }
+function chargeLabel(c, i){
+  var t = String((c && c.label) || '').trim();
+  return t || ('금액권 ' + (i + 1));
+}
+function chargeIndex(sb, id){
+  var arr = sortedCharges(sb);
+  for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return i;
+  return -1;
+}
+function chargeById(sb, id){
+  var arr = sb.charges, i;
+  for (i = 0; i < arr.length; i++) if (arr[i].id === id) return arr[i];
+  return null;
+}
+function chargeInfo(sb, c){
+  var charged = (c.amount || 0) + (c.bonus || 0), used = 0, n = 0;
+  sb.uses.forEach(function(u){ if (u.chargeId === c.id) { used += u.total; n++; } });
+  return { charged: charged, used: used, balance: charged - used, count: n };
+}
+function parseDay(s){
+  var p = String(s || '').split('-');
+  if (p.length !== 3) return NaN;
+  return Date.UTC(+p[0], +p[1] - 1, +p[2]);
+}
+function daysUntil(iso){
+  if (!isDate(iso)) return null;
+  var d = parseDay(iso), t = parseDay(todayISO());
+  if (isNaN(d) || isNaN(t)) return null;
+  return Math.round((d - t) / 86400000);
+}
+function addYears(iso, y){
+  if (!isDate(iso)) return '';
+  var p = iso.split('-'), yy = +p[0] + y, mm = p[1], dd = +p[2];
+  var dim = new Date(Date.UTC(yy, +mm, 0)).getUTCDate();
+  if (dd > dim) dd = dim;
+  return yy + '-' + mm + '-' + (dd < 10 ? '0' : '') + dd;
+}
+function ddText(iso){
+  var d = daysUntil(iso);
+  if (d == null) return '';
+  if (d > 0) return 'D-' + d;
+  if (d === 0) return 'D-day';
+  return '만료 ' + (-d) + '일 지남';
+}
+function expiryClass(c){
+  if (!c.expiryDate) return '';
+  var d = daysUntil(c.expiryDate);
+  if (d == null) return '';
+  return d < 0 ? ' exp' : (d <= 90 ? ' warn' : '');
+}
+function expiryTag(c){
+  if (!c.expiryDate) return '<span class="vtag none">기한 없음</span>';
+  return '<span class="vtag' + expiryClass(c) + '">' + esc(ddText(c.expiryDate)) + '</span>';
+}
+/* 시술 기록의 기본 금액권: 아직 잔액이 남은 것 중 가장 오래된 충전(선입선출) */
+function defaultChargeId(sb){
+  var arr = sortedCharges(sb), i, ci;
+  for (i = 0; i < arr.length; i++) {
+    ci = chargeInfo(sb, arr[i]);
+    if (ci.balance > 0 && !(arr[i].expiryDate && daysUntil(arr[i].expiryDate) < 0)) return arr[i].id;
+  }
+  for (i = 0; i < arr.length; i++) {
+    if (chargeInfo(sb, arr[i]).balance > 0) return arr[i].id;
+  }
+  return arr.length ? arr[0].id : '';
+}
+function chargeSelectHTML(sb, sel){
+  var arr = sortedCharges(sb);
+  if (!arr.length) return '<option value="">충전 기록 없음</option>';
+  var h = '';
+  arr.forEach(function(c, i){
+    var ci = chargeInfo(sb, c);
+    var ex = c.expiryDate ? (' · ' + dtext(c.expiryDate) + ' 만료') : ' · 기한 없음';
+    h += '<option value="' + esc(c.id) + '"' + (c.id === sel ? ' selected' : '') + '>' +
+      esc(chargeLabel(c, i)) + ' · 잔액 ' + money0(ci.balance) + '원' + esc(ex) + '</option>';
+  });
+  return h;
+}
 function usedInfo(sb, key){
   var n = 0;
   sb.uses.forEach(function(u){ if (u.key === key) n++; });
@@ -530,12 +676,18 @@ function uniqFams(b, cls){
   return out;
 }
 function merged(sb){
-  var rows = [];
+  var rows = [], arr = sortedCharges(sb), idx = Object.create(null);
+  arr.forEach(function(c, i){
+    idx[c.id] = { name: chargeLabel(c, i), date: c.date, expiryDate: c.expiryDate };
+  });
   sb.charges.forEach(function(c){
-    rows.push({ t: 'charge', id: c.id, date: c.date, createdAt: c.createdAt, amount: c.amount, bonus: c.bonus, memo: c.memo });
+    var m = idx[c.id] || {};
+    rows.push({ t: 'charge', id: c.id, date: c.date, createdAt: c.createdAt, amount: c.amount, bonus: c.bonus, memo: c.memo,
+      label: m.name || '금액권', expiryDate: c.expiryDate });
   });
   sb.uses.forEach(function(u){
-    rows.push({ t: 'use', id: u.id, date: u.date, createdAt: u.createdAt, u: u });
+    rows.push({ t: 'use', id: u.id, date: u.date, createdAt: u.createdAt, u: u,
+      chgName: u.chargeId && idx[u.chargeId] ? idx[u.chargeId].name : '' });
   });
   rows.sort(function(a, b){
     if (a.date !== b.date) return a.date < b.date ? 1 : -1;
@@ -596,12 +748,14 @@ function renderSummary(){
     '<p class="hero-label">남은 잔액</p>' +
     '<p class="hero-amount num' + (t.balance < 0 ? ' neg' : '') + '">' + (t.balance < 0 ? '−' : '') + money0(Math.abs(t.balance)) + '<span class="won">원</span></p>' +
     '<p class="hero-sub">충전 ' + money(t.charged) + ' · 사용 ' + money(t.used) +
-      (t.balance < 0 ? ' · 잔액 부족' : '') + '</p>' +
+      ' · 금액권 ' + sb.charges.length + '장' + (t.balance < 0 ? ' · 잔액 부족' : '') + '</p>' +
     '<div class="hero-actions">' +
       '<button class="btn light" data-act="open-charge">＋ 금액권 충전</button>' +
       '<button class="btn outline" data-act="open-use">시술 기록</button>' +
     '</div>' +
   '</section>';
+
+  h += renderVouchers(sb);
 
   h += '<div class="stats">' +
     '<div class="stat"><p class="stat-label">총 충전액</p><p class="stat-value num">' + money0(t.charged) + '원</p>' +
@@ -641,6 +795,51 @@ function renderSummary(){
   '</div>';
 
   $('#view-summary').innerHTML = h;
+}
+
+/* ---------------- render: 금액권 카드 ---------------- */
+function renderVouchers(sb){
+  var arr = sortedCharges(sb), t = totals(sb);
+  var h = '<div class="vset">' +
+    '<div class="vset-head"><h3>금액권별 잔액</h3><span class="cap">' +
+      (arr.length ? ('금액권 ' + arr.length + '장 · 합계 ' + money(t.balance)) : '아직 없음') +
+    '</span></div>' +
+    '<div class="vscroll">';
+  if (!arr.length) {
+    h += '<div class="vcard empty-v"><div class="vname">금액권이 없습니다</div>' +
+      '<div class="vmeta">충전을 기록하면 금액권별로 잔액과 유효기간을 나눠 보여드립니다.</div></div>';
+  }
+  arr.forEach(function(c, i){
+    var ci = chargeInfo(sb, c);
+    var pct = ci.charged > 0 ? Math.max(0, Math.min(100, Math.round(ci.used / ci.charged * 100))) : 0;
+    h += '<div class="vcard' + expiryClass(c) + '">' +
+      '<div class="vcard-top"><div class="vname">' + esc(chargeLabel(c, i)) + '</div>' + expiryTag(c) + '</div>' +
+      '<div class="vmeta">' + dtext(c.date) + ' 충전' +
+        (c.expiryDate ? (' · ' + dtext(c.expiryDate) + ' 만료') : ' · 기한 없음') + '</div>' +
+      '<div class="vbal"><b class="num' + (ci.balance < 0 ? ' neg' : '') + '">' + money0(ci.balance) + '원</b><span>남은 잔액</span></div>' +
+      '<div class="vrow"><span>충전 <b class="num">' + money0(ci.charged) + '</b></span>' +
+        '<span>사용 <b class="num">' + money0(ci.used) + '</b></span>' +
+        '<span>시술 <b class="num">' + ci.count + '건</b></span></div>' +
+      '<div class="vbar"><i style="width:' + pct + '%"></i></div>' +
+      '<div class="vacts">' +
+        '<button class="btn ghost sm" data-act="charge-use" data-id="' + esc(c.id) + '">이 금액권으로 기록</button>' +
+        '<button class="btn ghost sm" data-act="edit-charge" data-id="' + esc(c.id) + '">수정</button>' +
+      '</div>' +
+    '</div>';
+  });
+  h += '<button class="vadd" data-act="open-charge"><span>＋</span>금액권 충전</button>';
+  h += '</div>';
+  var unassigned = 0;
+  sb.uses.forEach(function(u){ if (!u.chargeId) unassigned += u.total; });
+  if (unassigned) {
+    h += '<p class="vhint">금액권이 지정되지 않은 기록 ' + money(unassigned) + '은 합계 잔액에만 반영됩니다.</p>';
+  }
+  var soon = arr.filter(function(c){ return c.expiryDate && daysUntil(c.expiryDate) !== null && daysUntil(c.expiryDate) <= 90; });
+  if (soon.length) {
+    h += '<p class="vhint">유효기간이 90일 안에 끝나는 금액권이 ' + soon.length + '장 있습니다. 먼저 사용하세요.</p>';
+  }
+  h += '</div>';
+  return h;
 }
 
 /* ---------------- render: price ---------------- */
@@ -726,11 +925,13 @@ function renderPriceList(){
 function historyRow(r, compact){
   if (r.t === 'charge') {
     var tot = r.amount + r.bonus;
-    var sub = '실결제 ' + money0(r.amount) + '원' + (r.bonus ? ' + 보너스 ' + money0(r.bonus) + '원' : '');
+    var sub = '실결제 ' + money0(r.amount) + '원' + (r.bonus ? ' + 보너스 ' + money0(r.bonus) + '원' : '') +
+      ' · ' + (r.expiryDate ? (dtext(r.expiryDate) + ' 만료 (' + ddText(r.expiryDate) + ')') : '기한 없음') +
+      (r.memo ? ' · ' + esc(r.memo) : '');
     return '<div class="hrow">' +
       '<div class="hicon">＋</div>' +
-      '<div class="hbody"><div class="htitle">금액권 충전</div>' +
-        '<div class="hsub">' + sub + (r.memo ? ' · ' + esc(r.memo) : '') + '</div></div>' +
+      '<div class="hbody"><div class="htitle">금액권 충전<span class="badge b-charge">' + esc(r.label) + '</span></div>' +
+        '<div class="hsub">' + sub + '</div></div>' +
       '<div class="hright"><div class="hamt in num">+' + money0(tot) + '원</div><div class="hdate">' + dtext(r.date) + '</div></div>' +
       (compact ? '' : '<div class="hacts">' +
         '<button class="iconbtn" data-act="edit-charge" data-id="' + esc(r.id) + '" aria-label="충전 수정">✎</button>' +
@@ -743,7 +944,8 @@ function historyRow(r, compact){
     '<div class="hicon use">−</div>' +
     '<div class="hbody"><div class="htitle">' + esc(u.name) +
       (u.cls !== 'normal' ? '<span class="badge b-' + u.cls + '">' + clsLabel(u.cls) + '</span>' : '') +
-      (u.forced ? '<span class="badge b-normal">강제</span>' : '') + '</div>' +
+      (u.forced ? '<span class="badge b-normal">강제</span>' : '') +
+      (r.chgName ? '<span class="badge b-charge">' + esc(r.chgName) + '</span>' : '<span class="badge b-normal">금액권 미지정</span>') + '</div>' +
       '<div class="hsub">' + usub + '</div></div>' +
     '<div class="hright"><div class="hamt num">−' + money0(u.total) + '원</div><div class="hdate">' + dtext(u.date) + '</div></div>' +
     (compact ? '' : '<div class="hacts">' +
@@ -848,8 +1050,11 @@ function closeSheet(){
 function openCharge(id){
   var sb = SB();
   var rec = id ? sb.charges.filter(function(c){ return c.id === id; })[0] : null;
+  var expMode = 'none';
+  if (rec && rec.expiryDate) expMode = (rec.expiryDate === addYears(rec.date, 2) ? '2y' : 'custom');
   var body = '<form id="chargeForm" data-id="' + (rec ? esc(rec.id) : '') + '">' +
     '<label class="field"><span>날짜</span><input type="date" id="cDate" value="' + (rec ? rec.date : todayISO()) + '" required></label>' +
+    '<label class="field"><span>금액권 이름 (선택)</span><input type="text" id="cLabel" maxlength="30" value="' + (rec ? esc(rec.label) : '') + '" placeholder="예: 2호 금액권 · 블프 금액권"></label>' +
     '<label class="field"><span>결제 금액 (원)</span><input type="number" id="cAmount" inputmode="numeric" min="0" step="1000" ' +
       'value="' + (rec ? rec.amount : '') + '" placeholder="500000" required></label>' +
     '<label class="field"><span>추가 적립 · 보너스 (원)</span><input type="number" id="cBonus" inputmode="numeric" min="0" step="1000" ' +
@@ -858,6 +1063,14 @@ function openCharge(id){
       '<button type="button" class="chip" data-act="quick" data-amount="500000" data-bonus="200000">블프한정 50만 결제 + 20만 적립</button>' +
       '<button type="button" class="chip" data-act="quick" data-amount="" data-bonus="0">보너스 없음</button>' +
     '</div>' +
+    '<label class="field"><span>유효기간</span><select id="cExpMode">' +
+      '<option value="none"' + (expMode === 'none' ? ' selected' : '') + '>없음 (기한 없이 사용)</option>' +
+      '<option value="2y"' + (expMode === '2y' ? ' selected' : '') + '>충전일로부터 2년</option>' +
+      '<option value="custom"' + (expMode === 'custom' ? ' selected' : '') + '>직접 입력</option>' +
+    '</select></label>' +
+    '<label class="field" id="cExpWrap"' + (expMode === 'custom' ? '' : ' hidden') + '><span>만료일</span>' +
+      '<input type="date" id="cExpDate" value="' + (rec && rec.expiryDate ? rec.expiryDate : '') + '"></label>' +
+    '<p class="hint" id="cExpHint"></p>' +
     '<label class="field"><span>메모 (선택)</span><input type="text" id="cMemo" maxlength="60" value="' + (rec ? esc(rec.memo) : '') + '" placeholder="예: 50만 멤버십 결제"></label>' +
     '<div class="calcbox">' +
       '<div><span>실결제</span><b id="sumPaid" class="num">0원</b></div>' +
@@ -869,6 +1082,33 @@ function openCharge(id){
   '</form>';
   openSheet(rec ? '충전 내역 수정' : '금액권 충전', body);
   updateChargeCalc();
+  syncExpiry();
+}
+function chargeExpiryValue(){
+  var mode = ($('#cExpMode') || {}).value || 'none';
+  var date = (($('#cDate') || {}).value) || todayISO();
+  if (mode === 'none') return null;
+  if (mode === '2y') return addYears(date, 2);
+  var v = ($('#cExpDate') || {}).value;
+  return isDate(v) ? v : (isDate(date) ? addYears(date, 2) : null);
+}
+function syncExpiry(){
+  var mode = ($('#cExpMode') || {}).value || 'none';
+  var wrap = $('#cExpWrap'), inp = $('#cExpDate'), hint = $('#cExpHint');
+  if (!wrap) return;
+  if (mode === 'custom') {
+    wrap.hidden = false;
+    if (inp && !isDate(inp.value)) inp.value = addYears((($('#cDate') || {}).value) || todayISO(), 2);
+  } else {
+    wrap.hidden = true;
+  }
+  if (hint) {
+    var v = chargeExpiryValue();
+    hint.className = 'hint';
+    hint.textContent = v
+      ? ('만료일 ' + dtext(v) + ' · ' + ddText(v) + ' · 기한이 지나면 이 금액권 잔액은 사용할 수 없습니다.')
+      : '유효기간을 두지 않으면 금액권은 계속 남아 있습니다. (예: 기존 1호 금액권)';
+  }
 }
 function updateChargeCalc(){
   var a = Math.max(0, Math.round(num(($('#cAmount') || {}).value)));
@@ -882,28 +1122,35 @@ function saveCharge(form){
   var date = $('#cDate').value || todayISO();
   var amount = Math.max(0, Math.round(num($('#cAmount').value)));
   var bonus = Math.max(0, Math.round(num($('#cBonus').value)));
+  var label = ($('#cLabel') ? $('#cLabel').value : '').trim().slice(0, 30);
   var memo = $('#cMemo').value.trim().slice(0, 60);
+  var expiry = chargeExpiryValue();
   if (!isDate(date)) { toast('날짜를 확인해 주세요.'); return; }
   if (!amount && !bonus) { toast('결제 금액을 입력해 주세요.'); $('#cAmount').focus(); return; }
+  if (expiry && expiry < date) { toast('만료일이 충전일보다 빠릅니다. 유효기간을 확인해 주세요.'); return; }
   var id = form.dataset.id;
   if (id) {
     var c = sb.charges.filter(function(x){ return x.id === id; })[0];
-    if (c) { c.date = date; c.amount = amount; c.bonus = bonus; c.memo = memo; }
+    if (c) { c.date = date; c.amount = amount; c.bonus = bonus; c.label = label; c.expiryDate = expiry; c.memo = memo; }
   } else {
-    sb.charges.push({ id: uid(), date: date, amount: amount, bonus: bonus, memo: memo, createdAt: Date.now() });
+    sb.charges.push({ id: uid(), date: date, amount: amount, bonus: bonus, label: label, expiryDate: expiry, memo: memo, createdAt: Date.now() });
   }
   saveState(); closeSheet(); renderAll();
-  toast(id ? '충전 내역을 수정했습니다.' : '금액권 ' + money(amount + bonus) + ' 충전을 기록했습니다.');
+  toast(id ? '충전 내역을 수정했습니다.' : ('금액권 ' + money(amount + bonus) + ' 충전을 기록했습니다' +
+    (expiry ? ' · ' + dtext(expiry) + ' 만료' : ' · 기한 없음') + '.'));
 }
 
 /* ---------------- use modal ---------------- */
-function openUse(id, presetKey){
+function openUse(id, presetKey, presetCharge){
   var sb = SB(), b = BR();
   var rec = id ? sb.uses.filter(function(u){ return u.id === id; })[0] : null;
   var preset = (!rec && presetKey) ? b.catalog.filter(function(c){ return c.key === presetKey; })[0] : null;
   var name = rec ? rec.name : (preset ? preset.name : '');
   var supply = rec ? rec.supply : (preset ? preset.minPrice : '');
   var date = rec ? rec.date : todayISO();
+  var hasCharges = sortedCharges(sb).length > 0;
+  var selCharge = rec ? String(rec.chargeId || '') : (presetCharge || (hasCharges ? defaultChargeId(sb) : ''));
+  if (selCharge && !chargeById(sb, selCharge)) selCharge = hasCharges ? defaultChargeId(sb) : '';
   var rangeHint = (preset && preset.minPrice !== preset.maxPrice)
     ? '<p class="hint">이벤트별 금액이 달라 최저가로 채웠습니다. 실제 결제 금액으로 고쳐 주세요.</p>' : '';
 
@@ -915,14 +1162,17 @@ function openUse(id, presetKey){
       '<div class="suggest" id="uSuggest" hidden></div>' +
       '<p class="hint">가격표에 없는 시술은 이름을 직접 입력하고 금액을 적으면 됩니다.</p>' +
     '</div>' +
-    '<label class="field"><span>공급가 · 부가세 별도 (원)</span><input type="number" id="uPrice" inputmode="numeric" min="0" step="100" ' +
-      'value="' + (supply === '' ? '' : supply) + '" placeholder="예: 2900" required></label>' +
+    '<label class="field"><span>공급가 · 부가세 별도 (원)</span><input type="number" id="uPrice" inputmode="numeric" min="0" step="100"' +
+      ' value="' + (supply === '' ? '' : supply) + '" placeholder="예: 2900" required></label>' +
     rangeHint +
     '<div class="calcbox">' +
       '<div><span>공급가</span><b id="calcSupply" class="num">0원</b></div>' +
       '<div><span>부가세 10%</span><b id="calcVat" class="num">0원</b></div>' +
       '<div class="total"><span>총 차감액</span><b id="calcTotal" class="num">0원</b></div>' +
     '</div>' +
+    '<label class="field"><span>차감할 금액권</span><select id="uCharge"' + (hasCharges ? '' : ' disabled') + '>' +
+      chargeSelectHTML(sb, selCharge) + '</select></label>' +
+    '<p class="hint" id="uChargeHint"></p>' +
     '<div class="flag" id="uFlag" hidden></div>' +
     '<div class="guard" id="uGuard" hidden>' +
       '<b>이 지점에서 이미 이용한 체험가·한정가 항목입니다</b>' +
@@ -945,86 +1195,47 @@ function updateUseCalc(){
   if ($('#calcSupply')) $('#calcSupply').textContent = money(c.supply);
   if ($('#calcVat')) $('#calcVat').textContent = money(c.vat);
   if ($('#calcTotal')) $('#calcTotal').textContent = money(c.total);
-  var t = totals(SB());
+  var sb = SB(), t = totals(sb);
+  var sel = $('#uCharge'), hintEl = $('#uChargeHint');
+  var chg = (sel && sel.value) ? chargeById(sb, sel.value) : null;
+  if (hintEl) {
+    if (!chg) {
+      hintEl.className = 'hint' + (c.total > 0 ? ' warn' : '');
+      hintEl.textContent = '충전 기록이 없습니다. 먼저 [금액권 충전]으로 충전을 기록하면 어느 금액권에서 차감할지 고를 수 있습니다.';
+    } else {
+      var ci = chargeInfo(sb, chg);
+      var idx = chargeIndex(sb, chg.id);
+      var nameTxt = chargeLabel(chg, idx);
+      var over = c.total > ci.balance;
+      hintEl.className = 'hint' + (over ? ' warn' : '');
+      hintEl.innerHTML = '이 금액권(<b>' + esc(nameTxt) + '</b>) 남은 잔액 ' + money(ci.balance) +
+        (chg.expiryDate ? (' · ' + dtext(chg.expiryDate) + ' 만료 ' + ddText(chg.expiryDate)) : ' · 기한 없음') +
+        (c.total > 0
+          ? (over
+              ? '<br>차감액이 잔액보다 ' + money(c.total - ci.balance) + ' 많습니다. 금액권을 바꾸거나 충전을 먼저 기록하세요.'
+              : '<br>차감 후 이 금액권 잔액 ' + money(ci.balance - c.total))
+          : '');
+    }
+  }
   var bal = $('#uBal');
   if (bal) {
     if (c.total > 0) {
       bal.className = 'balancehint' + (c.total > t.balance ? ' warn' : '');
       bal.textContent = (c.total > t.balance)
-        ? '현재 잔액(' + money(t.balance) + ')보다 ' + money(c.total - t.balance) + ' 많습니다. 기록 후 충전하면 잔액이 맞춰집니다.'
-        : '기록 후 남은 잔액 ' + money(t.balance - c.total) + ' · 현재 잔액 ' + money(t.balance);
+        ? '지점 합계 잔액(' + money(t.balance) + ')보다 ' + money(c.total - t.balance) + ' 많습니다. 기록 후 충전하면 잔액이 맞춰집니다.'
+        : '기록 후 지점 합계 잔액 ' + money(t.balance - c.total) + ' · 현재 잔액 ' + money(t.balance);
     } else { bal.textContent = ''; }
   }
   refreshUseFlags();
 }
-function refreshUseFlags(){
-  var f = $('#useForm');
-  if (!f) return;
-  var name = $('#uName').value.trim();
-  var flag = $('#uFlag'), guard = $('#uGuard');
-  if (!flag || !guard) return;
-  if (!name) { flag.hidden = true; guard.hidden = true; return; }
-  var sb = SB();
-  var prev = f.dataset.id ? sb.uses.filter(function(x){ return x.id === f.dataset.id; })[0] : null;
-  var same = !!(prev && prev.name === name);
-  var key = same ? prev.key : famKey(name);
-  var cls = same ? prev.cls : clsOf(name);
-  var ui = usedInfo(sb, key);
-  if (cls === 'normal') {
-    flag.hidden = true;
-  } else {
-    flag.hidden = false;
-    flag.innerHTML = '<span class="badge b-' + cls + '">' + clsLabel(cls) + '</span>' +
-      '<span>' + (ui.used ? '이 지점 이용 완료' : '이 지점 미이용 · 1회 이용 가능') + '</span>';
-  }
-  var editing = f.dataset.id;
-  var other = ui.records;
-  if (editing) {
-    other = sb.uses.filter(function(u){ return u.key === key && u.id === editing; }).length ? ui.records - 1 : ui.records;
-  }
-  var blocked = (cls !== 'normal') && (ui.manual || other > 0);
-  guard.hidden = !blocked;
-  if (blocked && $('#uGuardWhy')) {
-    $('#uGuardWhy').textContent = ui.manual
-      ? '가격표에서 이용 완료로 체크된 항목입니다. 필요하면 아래에 체크하고 기록하세요.'
-      : '이 지점 기록에 같은 시술이 ' + other + '건 있습니다. 필요하면 아래에 체크하고 기록하세요.';
-  }
-  if (!blocked && $('#uForce')) $('#uForce').checked = false;
-}
-function suggestNames(q){
-  var box = $('#uSuggest');
-  if (!box) return;
-  q = String(q || '').trim().toLowerCase();
-  if (!q) { box.hidden = true; box.innerHTML = ''; return; }
-  var b = BR();
-  var hits = b.catalog.filter(function(c){ return c.name.toLowerCase().indexOf(q) >= 0; }).slice(0, 8);
-  if (!hits.length) { box.hidden = true; box.innerHTML = ''; return; }
-  box.hidden = false;
-  box.innerHTML = hits.map(function(c){
-    var price = (c.minPrice === c.maxPrice) ? money(c.minPrice) : money(c.minPrice) + '~';
-    return '<button type="button" class="sitem" data-act="apply" data-key="' + esc(c.key) + '">' +
-      '<span class="sname">' + esc(c.name) + '</span><span class="sprice num">' + price + '</span></button>';
-  }).join('');
-}
-function applySuggestion(key){
-  var c = BR().catalog.filter(function(x){ return x.key === key; })[0];
-  if (!c) return;
-  var n = $('#uName'), p = $('#uPrice');
-  if (n) n.value = c.name;
-  if (p) p.value = c.minPrice;
-  var box = $('#uSuggest');
-  if (box) { box.hidden = true; box.innerHTML = ''; }
-  var hint = $('#useForm .hint');
-  updateUseCalc();
-  if (c.minPrice !== c.maxPrice && hint) {
-    hint.textContent = '이벤트별 금액이 달라 최저가로 채웠습니다. 실제 결제 금액으로 고쳐 주세요.';
-  }
-}
+
 function saveUse(form){
   var name = $('#uName').value.trim();
   var c = calc($('#uPrice').value);
   var date = $('#uDate').value || todayISO();
   var memo = $('#uMemo').value.trim().slice(0, 60);
+  var selU = $('#uCharge');
+  var chargeId = (selU && !selU.disabled) ? selU.value : '';
   if (!name) { toast('시술명을 입력해 주세요.'); $('#uName').focus(); return; }
   if (!isDate(date)) { toast('날짜를 확인해 주세요.'); return; }
   if (c.supply <= 0) { toast('공급가를 입력해 주세요.'); $('#uPrice').focus(); return; }
@@ -1046,22 +1257,23 @@ function saveUse(form){
     if (u) {
       u.date = date; u.name = name; u.key = key; u.cls = cls;
       u.supply = c.supply; u.vat = c.vat; u.total = c.total;
-      u.memo = memo; u.forced = forced;
+      u.memo = memo; u.forced = forced; u.chargeId = chargeId;
     }
   } else {
     sb.uses.push({
       id: uid(), date: date, name: name, key: key, cls: cls,
       supply: c.supply, vat: c.vat, total: c.total,
-      memo: memo, forced: forced, createdAt: Date.now()
+      chargeId: chargeId, memo: memo, forced: forced, createdAt: Date.now()
     });
   }
   saveState(); closeSheet(); renderAll();
+  var from = chargeId ? (' · ' + chargeLabel(chargeById(sb, chargeId) || {}, Math.max(0, chargeIndex(sb, chargeId))) + '에서 차감') : '';
   if (id) {
-    toast('시술 기록을 수정했습니다.');
+    toast('시술 기록을 수정했습니다.' + from);
   } else if (cls !== 'normal' && !before) {
-    toast(clsLabel(cls) + ' 이용 완료로 표시했습니다 · ' + money(c.total) + ' 차감');
+    toast(clsLabel(cls) + ' 이용 완료로 표시했습니다 · ' + money(c.total) + from);
   } else {
-    toast('시술 ' + money(c.total) + ' 기록을 저장했습니다.');
+    toast('시술 ' + money(c.total) + ' 기록을 저장했습니다.' + from);
   }
 }
 
@@ -1082,9 +1294,14 @@ function toggleUsed(key){
   saveState(); renderAll();
 }
 function delCharge(id){
-  if (!confirm('이 충전 기록을 삭제할까요?')) return;
   var sb = SB();
-  sb.charges = sb.charges.filter(function(c){ return c.id !== id; });
+  var c = chargeById(sb, id);
+  if (!c) return;
+  var ci = chargeInfo(sb, c), ix = chargeIndex(sb, id);
+  if (!confirm(chargeLabel(c, ix) + ' 충전 기록을 삭제할까요?\n이 금액권에서 차감된 시술 ' + ci.count + '건(' + money(ci.used) + ')은 금액권 지정만 풀립니다.')) return;
+  sb.charges = sb.charges.filter(function(x){ return x.id !== id; });
+  var def = firstChargeId(sb);
+  sb.uses.forEach(function(u){ if (u.chargeId === id) u.chargeId = def || ''; });
   saveState(); renderAll(); toast('충전 기록을 삭제했습니다.');
 }
 function delUse(id){
@@ -1102,7 +1319,7 @@ function resetBranch(){
 }
 function exportData(){
   try {
-    var payload = { app: 'velyb-voucher-manager', version: 1, exportedAt: new Date().toISOString(), state: S };
+    var payload = { app: 'velyb-voucher-manager', version: 2, exportedAt: new Date().toISOString(), state: S };
     var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     var a = document.createElement('a');
     var d = new Date();
@@ -1159,7 +1376,9 @@ document.addEventListener('click', function(e){
   } else if (act === 'open-charge') {
     openCharge(el.dataset.id || null);
   } else if (act === 'open-use') {
-    openUse(null, el.dataset.key || null);
+    openUse(null, el.dataset.key || null, null);
+  } else if (act === 'charge-use') {
+    openUse(null, null, el.dataset.id);
   } else if (act === 'edit-charge') {
     openCharge(el.dataset.id);
   } else if (act === 'edit-use') {
@@ -1225,6 +1444,8 @@ document.addEventListener('input', function(e){
     UI.q = t.value; UI.limit = 30; renderPriceList();
   } else if (t.id === 'cAmount' || t.id === 'cBonus') {
     updateChargeCalc();
+  } else if (t.id === 'cDate') {
+    syncExpiry();
   } else if (t.id === 'uPrice') {
     updateUseCalc();
   } else if (t.id === 'uName') {
@@ -1233,6 +1454,13 @@ document.addEventListener('input', function(e){
     suggestNames(t.value);
     updateUseCalc();
   }
+});
+
+document.addEventListener('change', function(e){
+  var t = e.target;
+  if (!t || !t.id) return;
+  if (t.id === 'uCharge') updateUseCalc();
+  else if (t.id === 'cExpMode' || t.id === 'cExpDate') syncExpiry();
 });
 
 document.addEventListener('submit', function(e){
