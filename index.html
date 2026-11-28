@@ -39,7 +39,8 @@ a{color:var(--rose-d);text-decoration:none}
   background:rgba(248,245,243,.94);-webkit-backdrop-filter:saturate(1.5) blur(14px);backdrop-filter:saturate(1.5) blur(14px);
   border-bottom:1px solid rgba(0,0,0,.045)}
 .branchtabs{display:flex;gap:5px;background:#EFE7E3;padding:4px;border-radius:14px}
-.branchtabs .btab{flex:1 1 0;min-width:0}
+.branchtabs .btab{flex:1 1 0;min-width:0;overflow:hidden}
+.branchtabs .btab-name,.branchtabs .btab-sub{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btab{border:0;background:transparent;border-radius:11px;padding:7px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:1px;
   cursor:pointer;color:#7C6E75;transition:background .15s,color .15s;-webkit-tap-highlight-color:transparent}
 .btab .btab-name{font-size:14px;font-weight:700;letter-spacing:-.01em}
