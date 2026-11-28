@@ -108,6 +108,8 @@ a{color:var(--rose-d);text-decoration:none}
 .b-both{background:linear-gradient(120deg,#FCE7EC,#F1EAFB);color:#7A3560}
 .b-normal{background:#F2EFED;color:#7C7176}
 .b-used{background:var(--green-soft);color:var(--green)}
+/* 시술 부위 배지 — 금액권(파랑)·체험가(핑크)·한정가(보라)와 구분되는 골드 톤 */
+.b-part{background:#FBF1DF;color:#8A6520}
 
 /* progress */
 .prog{margin-top:11px}
@@ -146,6 +148,8 @@ a{color:var(--rose-d);text-decoration:none}
 .vbal b.neg{color:#B04765}
 .vrow{display:flex;gap:10px;margin-top:5px;font-size:10.5px;color:var(--muted);font-weight:600}
 .vrow b{color:var(--ink2);font-weight:700}
+.vparts{margin-top:6px;font-size:10.5px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vparts b{color:#8A6520;font-weight:800}
 .vbar{height:5px;border-radius:99px;background:#F3EBE8;margin-top:8px;overflow:hidden}
 .vbar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#D2627E,#E7A3B4)}
 .vcard.exp .vbar i{background:linear-gradient(90deg,#C9563F,#E8A08A)}
@@ -475,6 +479,8 @@ function normUse(u){
     vat: (u.vat != null ? Math.round(num(u.vat)) : c.vat),
     total: (u.total != null ? Math.round(num(u.total)) : c.total),
     chargeId: String(u.chargeId || '').slice(0, 40),
+    /* 시술 부위(선택) — 예전 백업(v1·v2)에 없으면 빈 문자열로 맞춥니다. */
+    part: String(u.part || '').slice(0, 40),
     memo: String(u.memo || '').slice(0, 80),
     forced: !!u.forced,
     createdAt: num(u.createdAt) || Date.now()
@@ -531,6 +537,7 @@ function seedState(){
       key: (seedCls === 'normal' ? String(u.key || u.name) : famKey(String(u.key || u.name))),
       supply: c.supply, vat: c.vat, total: c.total,
       chargeId: (u.chargeId && idmap[String(u.chargeId)]) ? idmap[String(u.chargeId)] : (sb.charges.length ? sb.charges[0].id : ''),
+      part: String(u.part || '').slice(0, 40),
       memo: u.memo, forced: !!u.forced,
       createdAt: (Date.parse(u.date + 'T11:' + pad2(i * 7) + ':00') || Date.now())
     });
@@ -691,7 +698,8 @@ function merged(sb){
   });
   rows.sort(function(a, b){
     if (a.date !== b.date) return a.date < b.date ? 1 : -1;
-    return (b.createdAt || 0) - (a.createdAt || 0);
+    /* 같은 날은 그날 실제 순서(오전 → 오후)대로: 금액권 충전이 시술 차감보다 위에 옵니다. */
+    return (a.createdAt || 0) - (b.createdAt || 0);
   });
   return rows;
 }
@@ -798,6 +806,18 @@ function renderSummary(){
 }
 
 /* ---------------- render: 금액권 카드 ---------------- */
+/* 이 금액권에서 받은 시술의 부위를 한 줄로 모아 보여줍니다. */
+function partsLine(sb, chargeId){
+  var out = [], seen = Object.create(null);
+  sb.uses.forEach(function(u){
+    var p = String(u.part || '').trim();
+    if (u.chargeId !== chargeId || !p || seen[p]) return;
+    seen[p] = 1; out.push(p);
+  });
+  if (!out.length) return '';
+  var shown = out.slice(0, 3).join(' · ') + (out.length > 3 ? ' 외 ' + (out.length - 3) : '');
+  return '<div class="vparts" title="' + esc(out.join(' · ')) + '">부위 <b>' + esc(shown) + '</b></div>';
+}
 function renderVouchers(sb){
   var arr = sortedCharges(sb), t = totals(sb);
   var h = '<div class="vset">' +
@@ -820,6 +840,7 @@ function renderVouchers(sb){
       '<div class="vrow"><span>충전 <b class="num">' + money0(ci.charged) + '</b></span>' +
         '<span>사용 <b class="num">' + money0(ci.used) + '</b></span>' +
         '<span>시술 <b class="num">' + ci.count + '건</b></span></div>' +
+      partsLine(sb, c.id) +
       '<div class="vbar"><i style="width:' + pct + '%"></i></div>' +
       '<div class="vacts">' +
         '<button class="btn ghost sm" data-act="charge-use" data-id="' + esc(c.id) + '">이 금액권으로 기록</button>' +
@@ -943,6 +964,7 @@ function historyRow(r, compact){
   return '<div class="hrow">' +
     '<div class="hicon use">−</div>' +
     '<div class="hbody"><div class="htitle">' + esc(u.name) +
+      (u.part ? '<span class="badge b-part">부위: ' + esc(u.part) + '</span>' : '') +
       (u.cls !== 'normal' ? '<span class="badge b-' + u.cls + '">' + clsLabel(u.cls) + '</span>' : '') +
       (u.forced ? '<span class="badge b-normal">강제</span>' : '') +
       (r.chgName ? '<span class="badge b-charge">' + esc(r.chgName) + '</span>' : '<span class="badge b-normal">금액권 미지정</span>') + '</div>' +
@@ -1162,6 +1184,8 @@ function openUse(id, presetKey, presetCharge){
       '<div class="suggest" id="uSuggest" hidden></div>' +
       '<p class="hint">가격표에 없는 시술은 이름을 직접 입력하고 금액을 적으면 됩니다.</p>' +
     '</div>' +
+    '<label class="field"><span>시술 부위 (선택)</span><input type="text" id="uPart" maxlength="40" value="' + (rec ? esc(rec.part || '') : '') + '"' +
+      ' placeholder="예: 미간·자갈턱, 침샘, 사각턱, 얼굴전체" autocomplete="off"></label>' +
     '<label class="field"><span>공급가 · 부가세 별도 (원)</span><input type="number" id="uPrice" inputmode="numeric" min="0" step="100"' +
       ' value="' + (supply === '' ? '' : supply) + '" placeholder="예: 2900" required></label>' +
     rangeHint +
@@ -1229,10 +1253,74 @@ function updateUseCalc(){
   refreshUseFlags();
 }
 
+function refreshUseFlags(){
+  var f = $('#useForm');
+  if (!f) return;
+  var name = $('#uName').value.trim();
+  var flag = $('#uFlag'), guard = $('#uGuard');
+  if (!flag || !guard) return;
+  if (!name) { flag.hidden = true; guard.hidden = true; return; }
+  var sb = SB();
+  var prev = f.dataset.id ? sb.uses.filter(function(x){ return x.id === f.dataset.id; })[0] : null;
+  var same = !!(prev && prev.name === name);
+  var key = same ? prev.key : famKey(name);
+  var cls = same ? prev.cls : clsOf(name);
+  var ui = usedInfo(sb, key);
+  if (cls === 'normal') {
+    flag.hidden = true;
+  } else {
+    flag.hidden = false;
+    flag.innerHTML = '<span class="badge b-' + cls + '">' + clsLabel(cls) + '</span>' +
+      '<span>' + (ui.used ? '이 지점 이용 완료' : '이 지점 미이용 · 1회 이용 가능') + '</span>';
+  }
+  var editing = f.dataset.id;
+  var other = ui.records;
+  if (editing) {
+    other = sb.uses.filter(function(u){ return u.key === key && u.id === editing; }).length ? ui.records - 1 : ui.records;
+  }
+  var blocked = (cls !== 'normal') && (ui.manual || other > 0);
+  guard.hidden = !blocked;
+  if (blocked && $('#uGuardWhy')) {
+    $('#uGuardWhy').textContent = ui.manual
+      ? '가격표에서 이용 완료로 체크된 항목입니다. 필요하면 아래에 체크하고 기록하세요.'
+      : '이 지점 기록에 같은 시술이 ' + other + '건 있습니다. 필요하면 아래에 체크하고 기록하세요.';
+  }
+  if (!blocked && $('#uForce')) $('#uForce').checked = false;
+}
+function suggestNames(q){
+  var box = $('#uSuggest');
+  if (!box) return;
+  q = String(q || '').trim().toLowerCase();
+  if (!q) { box.hidden = true; box.innerHTML = ''; return; }
+  var b = BR();
+  var hits = b.catalog.filter(function(c){ return c.name.toLowerCase().indexOf(q) >= 0; }).slice(0, 8);
+  if (!hits.length) { box.hidden = true; box.innerHTML = ''; return; }
+  box.hidden = false;
+  box.innerHTML = hits.map(function(c){
+    var price = (c.minPrice === c.maxPrice) ? money(c.minPrice) : money(c.minPrice) + '~';
+    return '<button type="button" class="sitem" data-act="apply" data-key="' + esc(c.key) + '">' +
+      '<span class="sname">' + esc(c.name) + '</span><span class="sprice num">' + price + '</span></button>';
+  }).join('');
+}
+function applySuggestion(key){
+  var c = BR().catalog.filter(function(x){ return x.key === key; })[0];
+  if (!c) return;
+  var n = $('#uName'), p = $('#uPrice');
+  if (n) n.value = c.name;
+  if (p) p.value = c.minPrice;
+  var box = $('#uSuggest');
+  if (box) { box.hidden = true; box.innerHTML = ''; }
+  var hint = $('#useForm .hint');
+  updateUseCalc();
+  if (c.minPrice !== c.maxPrice) {
+    if (hint) hint.textContent = '이벤트별 금액이 달라 최저가로 채웠습니다. 실제 결제 금액으로 고쳐 주세요.';
+  }
+}
 function saveUse(form){
   var name = $('#uName').value.trim();
   var c = calc($('#uPrice').value);
   var date = $('#uDate').value || todayISO();
+  var part = ($('#uPart') ? $('#uPart').value : '').trim().slice(0, 40);
   var memo = $('#uMemo').value.trim().slice(0, 60);
   var selU = $('#uCharge');
   var chargeId = (selU && !selU.disabled) ? selU.value : '';
@@ -1257,13 +1345,13 @@ function saveUse(form){
     if (u) {
       u.date = date; u.name = name; u.key = key; u.cls = cls;
       u.supply = c.supply; u.vat = c.vat; u.total = c.total;
-      u.memo = memo; u.forced = forced; u.chargeId = chargeId;
+      u.part = part; u.memo = memo; u.forced = forced; u.chargeId = chargeId;
     }
   } else {
     sb.uses.push({
       id: uid(), date: date, name: name, key: key, cls: cls,
       supply: c.supply, vat: c.vat, total: c.total,
-      chargeId: chargeId, memo: memo, forced: forced, createdAt: Date.now()
+      chargeId: chargeId, part: part, memo: memo, forced: forced, createdAt: Date.now()
     });
   }
   saveState(); closeSheet(); renderAll();
